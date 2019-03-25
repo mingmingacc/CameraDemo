@@ -89,7 +89,7 @@ object BitmapUtils {
         thread {
             try {
                 val temp = System.currentTimeMillis()
-                val picFile = FileUtil.createCameraFile("camera2")
+                val picFile = FileUtil.createCameraFile("image")
                 if (picFile != null && data != null) {
 
                     val rawBitmap = BitmapFactory.decodeByteArray(data, 0, data.size)

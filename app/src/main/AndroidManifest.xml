@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.android.example.camerademo">
-    <uses-permission android:name="android.permission.CAMERA"/>
+
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <uses-feature android:name="android.hardware.camera" />
 
     <uses-permission android:name="android.hardware.camera.autofocus" />
-
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -17,13 +18,15 @@
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".demo1.CameraActivity"/>
-        <activity android:name=".demo1.CameraActivity2"/>
-        <activity android:name=".PicActivity"/>
+        <activity android:name=".demo1.CameraActivity" />
+        <activity android:name=".demo1.CameraActivity2" />
+        <activity android:name=".PicActivity" />
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.android.example.camerademo.FileProvider"
@@ -33,5 +36,8 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
+        <activity android:name=".demo1.TestActivity"></activity>
     </application>
+
 </manifest>

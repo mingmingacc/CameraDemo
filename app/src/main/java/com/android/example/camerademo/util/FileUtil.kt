@@ -13,7 +13,7 @@ import java.util.*
  * desc :
  */
 object FileUtil {
-    private val rootFolderPath = Environment.getExternalStorageDirectory().absolutePath + File.separator + "CameraDemo"
+    private val rootFolderPath = Environment.getExternalStorageDirectory().absolutePath + File.separator + "CameraImages"
 
     fun createImageFile(isCrop: Boolean = false): File? {
         return try {

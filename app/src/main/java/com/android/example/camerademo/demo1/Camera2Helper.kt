@@ -19,6 +19,7 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.provider.MediaStore
 import android.support.v4.content.ContextCompat
+import android.util.Log
 import android.util.Size
 import android.view.Surface
 import android.view.TextureView

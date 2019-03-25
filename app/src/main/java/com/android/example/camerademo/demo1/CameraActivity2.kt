@@ -2,10 +2,12 @@ package com.android.example.camerademo.demo1
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.ImageFormat
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.Window
 import android.view.WindowManager
 import com.android.example.camerademo.PicActivity
@@ -14,7 +16,16 @@ import com.android.example.camerademo.util.UriUtils
 import com.android.example.camerademo.util.log
 import com.android.example.camerademo.util.toast
 import com.cs.camerademo.camera2.Camera2Helper
+import com.luck.picture.lib.PictureSelector
+import com.luck.picture.lib.PictureSelectorActivity
+import com.luck.picture.lib.config.PictureConfig
+import com.luck.picture.lib.config.PictureConfig.CHOOSE_REQUEST
+import com.luck.picture.lib.config.PictureConfig.SINGLE
+import com.luck.picture.lib.config.PictureMimeType
 import kotlinx.android.synthetic.main.activity_camera2.*
+import android.R.attr.data
+import com.luck.picture.lib.entity.LocalMedia
+
 
 class CameraActivity2 : AppCompatActivity() {
 
@@ -29,15 +40,25 @@ class CameraActivity2 : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // 设置无标题
-        requestWindowFeature(Window.FEATURE_NO_TITLE)
-        window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(R.layout.activity_camera2)
 
 
         mCamera2Helper = Camera2Helper(this, textureView)
 
-        btnTakePic.setOnClickListener { mCamera2Helper.takePic() }
+        btnTakePic.setOnClickListener {
+            //            mCamera2Helper.takePic()
+//            PictureSelector.create(this@CameraActivity2)
+//                    .openCamera(PictureMimeType.ofImage())
+//                    .enableCrop(true)
+//                    .showCropFrame(true)
+//                    .showCropGrid(true)
+//                    .hideBottomControls(false)
+//                    .freeStyleCropEnabled(true)
+//                    .selectionMode(SINGLE)
+//                    .forResult(REQUEST_CODE_ALBUM)
+
+            startActivity(Intent(this@CameraActivity2, TestActivity::class.java))
+        }
         ivExchange.setOnClickListener { mCamera2Helper.exchangeCamera() }
         camera_iv_history.setOnClickListener { toast("打开历史纪录") }
         camera_iv_back.setOnClickListener { finish() }
@@ -46,8 +67,17 @@ class CameraActivity2 : AppCompatActivity() {
 
     //打开系统相册
     private fun gotoGallery() {
-        var intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(intent, REQUEST_CODE_ALBUM)
+//        var intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+//        startActivityForResult(intent, REQUEST_CODE_ALBUM)
+        PictureSelector.create(this@CameraActivity2)
+                .openGallery(PictureMimeType.ofImage())
+                .enableCrop(true)
+                .showCropFrame(true)
+                .showCropGrid(true)
+                .hideBottomControls(false)
+                .freeStyleCropEnabled(true)
+                .selectionMode(SINGLE)
+                .forResult(REQUEST_CODE_ALBUM)
     }
 
     override fun onDestroy() {
@@ -73,15 +103,19 @@ class CameraActivity2 : AppCompatActivity() {
                 REQUEST_CODE_ALBUM -> {
 
                     data?.let {
-                        log("选择完图片:" + it.data)
-                        // 第一种拿到图片去裁剪
-                        //第二种把图片传到其他Activity展示
-                        var uri: Uri = it.data
+                        val selectList = PictureSelector.obtainMultipleResult(it)
+                        var path = selectList[0].cutPath
+//                        log("选择完图片:" + it.data)
+//                        // 第一种拿到图片去裁剪
+//                        //第二种把图片传到其他Activity展示
+//                        var uri: Uri = it.data
                         val intent = Intent(this@CameraActivity2, PicActivity::class.java)
-                        intent.putExtra("imgUri", UriUtils.getPath(this@CameraActivity2, uri))
+                        intent.putExtra("imgUri", path)
                         startActivity(intent)
                     }
-
+                }
+                CHOOSE_REQUEST -> {
+                    log("dddddddddddddddddddddddddddd")
                 }
             }
         }

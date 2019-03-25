@@ -11,7 +11,7 @@ import android.provider.MediaStore
 import android.support.annotation.RequiresApi
 
 /**
- * Created by Administrator on 2018/5/11.
+ * Created by xzm on 2019/3/22.
  */
 
 object UriUtils {
