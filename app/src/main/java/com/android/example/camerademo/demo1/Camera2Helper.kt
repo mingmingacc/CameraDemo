@@ -148,7 +148,6 @@ class Camera2Helper(val mActivity: Activity, private val mTextureView: TextureVi
 
         mImageReader = ImageReader.newInstance(mSavePicSize.width, mSavePicSize.height, ImageFormat.JPEG, 1)
         mImageReader?.setOnImageAvailableListener(onImageAvailableListener, mCameraHandler)
-
         openCamera()
     }
 

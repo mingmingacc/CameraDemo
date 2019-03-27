@@ -25,9 +25,15 @@ import com.luck.picture.lib.config.PictureMimeType
 import kotlinx.android.synthetic.main.activity_camera2.*
 import android.R.attr.data
 import com.luck.picture.lib.entity.LocalMedia
+import com.luck.picture.lib.tools.PictureFileUtils
+import android.R.attr.mimeType
+import com.luck.picture.lib.PictureBaseActivity
+import android.support.v4.content.FileProvider
+import android.os.Build
+import java.io.File
 
 
-class CameraActivity2 : AppCompatActivity() {
+class CameraActivity2 : PictureBaseActivity() {
 
     companion object {
         const val REQUEST_CODE_CAPTURE = 3
@@ -47,17 +53,18 @@ class CameraActivity2 : AppCompatActivity() {
 
         btnTakePic.setOnClickListener {
             //            mCamera2Helper.takePic()
-//            PictureSelector.create(this@CameraActivity2)
-//                    .openCamera(PictureMimeType.ofImage())
-//                    .enableCrop(true)
-//                    .showCropFrame(true)
-//                    .showCropGrid(true)
-//                    .hideBottomControls(false)
-//                    .freeStyleCropEnabled(true)
-//                    .selectionMode(SINGLE)
-//                    .forResult(REQUEST_CODE_ALBUM)
-
-            startActivity(Intent(this@CameraActivity2, TestActivity::class.java))
+            val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            if (cameraIntent.resolveActivity(packageManager) != null) {
+                val type = if (config.mimeType === PictureConfig.TYPE_ALL) PictureConfig.TYPE_IMAGE else config.mimeType
+                val cameraFile = PictureFileUtils.createCameraFile(this,
+                        type,
+                        outputCameraPath, config.suffixType)
+                cameraPath = cameraFile.absolutePath
+                val imageUri = parUri(cameraFile)
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
+                startActivityForResult(cameraIntent, PictureConfig.REQUEST_CAMERA)
+            }
+//            startActivity(Intent(this@CameraActivity2, TestActivity::class.java))
         }
         ivExchange.setOnClickListener { mCamera2Helper.exchangeCamera() }
         camera_iv_history.setOnClickListener { toast("打开历史纪录") }
@@ -82,26 +89,45 @@ class CameraActivity2 : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        Log.e("mingming", "销毁了吗")
         mCamera2Helper.releaseCamera()
         mCamera2Helper.releaseThread()
     }
 
     override fun onResume() {
         super.onResume()
-        mCamera2Helper.startPreview()
+//        mCamera2Helper.startPreview()
     }
 
     override fun onPause() {
         super.onPause()
-        mCamera2Helper.stopPreview()
+//        mCamera2Helper.stopPreview()
     }
+
+    /**
+     * 生成uri
+     *
+     * @param cameraFile
+     * @return
+     */
+    private fun parUri(cameraFile: File): Uri {
+        val imageUri: Uri
+        val authority = "$packageName.provider"
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+            //通过FileProvider创建一个content类型的Uri
+            imageUri = FileProvider.getUriForFile(mContext, authority, cameraFile)
+        } else {
+            imageUri = Uri.fromFile(cameraFile)
+        }
+        return imageUri
+    }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 REQUEST_CODE_ALBUM -> {
-
                     data?.let {
                         val selectList = PictureSelector.obtainMultipleResult(it)
                         var path = selectList[0].cutPath
@@ -114,8 +140,8 @@ class CameraActivity2 : AppCompatActivity() {
                         startActivity(intent)
                     }
                 }
-                CHOOSE_REQUEST -> {
-                    log("dddddddddddddddddddddddddddd")
+                PictureConfig.REQUEST_CAMERA -> {
+                    Log.e("mingming", "拍照了吗")
                 }
             }
         }
