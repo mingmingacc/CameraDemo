@@ -15,6 +15,7 @@ import android.hardware.camera2.*
 import android.hardware.camera2.params.Face
 import android.media.ImageReader
 import android.media.ImageReader.OnImageAvailableListener
+import android.net.Uri
 import android.os.Handler
 import android.os.HandlerThread
 import android.provider.MediaStore
@@ -27,6 +28,7 @@ import android.widget.TextView
 import com.android.example.camerademo.util.log
 import com.android.example.camerademo.util.toast
 import com.cs.camerademo.util.BitmapUtils
+import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -161,6 +163,8 @@ class Camera2Helper(val mActivity: Activity, private val mTextureView: TextureVi
         BitmapUtils.savePic(byteArray, mCameraSensorOrientation == 270, { savedPath, time ->
             mActivity.runOnUiThread {
                 mActivity.toast("图片保存成功！ 保存路径：$savedPath 耗时：$time")
+                var file = File(savedPath)
+                mActivity.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)))
             }
         }, { msg ->
             mActivity.runOnUiThread {

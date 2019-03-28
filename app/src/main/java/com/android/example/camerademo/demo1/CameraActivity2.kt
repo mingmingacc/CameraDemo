@@ -52,19 +52,7 @@ class CameraActivity2 : PictureBaseActivity() {
         mCamera2Helper = Camera2Helper(this, textureView)
 
         btnTakePic.setOnClickListener {
-            //            mCamera2Helper.takePic()
-            val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            if (cameraIntent.resolveActivity(packageManager) != null) {
-                val type = if (config.mimeType === PictureConfig.TYPE_ALL) PictureConfig.TYPE_IMAGE else config.mimeType
-                val cameraFile = PictureFileUtils.createCameraFile(this,
-                        type,
-                        outputCameraPath, config.suffixType)
-                cameraPath = cameraFile.absolutePath
-                val imageUri = parUri(cameraFile)
-                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
-                startActivityForResult(cameraIntent, PictureConfig.REQUEST_CAMERA)
-            }
-//            startActivity(Intent(this@CameraActivity2, TestActivity::class.java))
+            mCamera2Helper.takePic()
         }
         ivExchange.setOnClickListener { mCamera2Helper.exchangeCamera() }
         camera_iv_history.setOnClickListener { toast("打开历史纪录") }
