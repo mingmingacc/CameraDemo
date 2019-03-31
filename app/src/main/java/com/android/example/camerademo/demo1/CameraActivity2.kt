@@ -16,24 +16,19 @@ import com.android.example.camerademo.util.UriUtils
 import com.android.example.camerademo.util.log
 import com.android.example.camerademo.util.toast
 import com.cs.camerademo.camera2.Camera2Helper
+import kotlinx.android.synthetic.main.activity_camera2.*
+import android.R.attr.data
+import android.os.Build
+import android.support.v4.content.FileProvider
 import com.luck.picture.lib.PictureSelector
-import com.luck.picture.lib.PictureSelectorActivity
 import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.config.PictureConfig.CHOOSE_REQUEST
 import com.luck.picture.lib.config.PictureConfig.SINGLE
 import com.luck.picture.lib.config.PictureMimeType
-import kotlinx.android.synthetic.main.activity_camera2.*
-import android.R.attr.data
-import com.luck.picture.lib.entity.LocalMedia
-import com.luck.picture.lib.tools.PictureFileUtils
-import android.R.attr.mimeType
-import com.luck.picture.lib.PictureBaseActivity
-import android.support.v4.content.FileProvider
-import android.os.Build
 import java.io.File
 
 
-class CameraActivity2 : PictureBaseActivity() {
+class CameraActivity2 : AppCompatActivity() {
 
     companion object {
         const val REQUEST_CODE_CAPTURE = 3
@@ -53,6 +48,7 @@ class CameraActivity2 : PictureBaseActivity() {
 
         btnTakePic.setOnClickListener {
             mCamera2Helper.takePic()
+//            startActivity(Intent(this@CameraActivity2, TestActivity::class.java))
         }
         ivExchange.setOnClickListener { mCamera2Helper.exchangeCamera() }
         camera_iv_history.setOnClickListener { toast("打开历史纪录") }
@@ -77,7 +73,6 @@ class CameraActivity2 : PictureBaseActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.e("mingming", "销毁了吗")
         mCamera2Helper.releaseCamera()
         mCamera2Helper.releaseThread()
     }
@@ -103,7 +98,7 @@ class CameraActivity2 : PictureBaseActivity() {
         val authority = "$packageName.provider"
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
             //通过FileProvider创建一个content类型的Uri
-            imageUri = FileProvider.getUriForFile(mContext, authority, cameraFile)
+            imageUri = FileProvider.getUriForFile(this, authority, cameraFile)
         } else {
             imageUri = Uri.fromFile(cameraFile)
         }
@@ -116,6 +111,7 @@ class CameraActivity2 : PictureBaseActivity() {
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 REQUEST_CODE_ALBUM -> {
+
                     data?.let {
                         val selectList = PictureSelector.obtainMultipleResult(it)
                         var path = selectList[0].cutPath

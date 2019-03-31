@@ -25,9 +25,14 @@ import android.util.Size
 import android.view.Surface
 import android.view.TextureView
 import android.widget.TextView
+import com.android.example.camerademo.R
 import com.android.example.camerademo.util.log
 import com.android.example.camerademo.util.toast
 import com.cs.camerademo.util.BitmapUtils
+import com.luck.picture.lib.config.PictureMimeType
+import com.luck.picture.lib.entity.LocalMedia
+import com.luck.picture.lib.tools.AttrsUtils
+import com.yalantis.ucrop.UCrop
 import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
@@ -165,6 +170,16 @@ class Camera2Helper(val mActivity: Activity, private val mTextureView: TextureVi
                 mActivity.toast("图片保存成功！ 保存路径：$savedPath 耗时：$time")
                 var file = File(savedPath)
                 mActivity.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)))
+                var media = LocalMedia()
+                media.path = savedPath
+                var pictureType = PictureMimeType.createImageType(savedPath)
+                media.pictureType = pictureType
+                media.duration = 0
+                media.mimeType = PictureMimeType.ofImage()
+                log("media:$media")
+
+                // 去裁剪
+                startCrop(savedPath)
             }
         }, { msg ->
             mActivity.runOnUiThread {
@@ -389,5 +404,15 @@ class Camera2Helper(val mActivity: Activity, private val mTextureView: TextureVi
         override fun compare(size1: Size, size2: Size): Int {
             return java.lang.Long.signum(size1.width.toLong() * size1.height - size2.width.toLong() * size2.height)
         }
+    }
+
+    private fun startCrop(originalPath: String) {
+        var options = UCrop.Options()
+        var toolbarColor = AttrsUtils.getTypeValueColor(mActivity, R.attr.picture_crop_toolbar_bg)
+        var statusColor = AttrsUtils.getTypeValueColor(mActivity, R.attr.picture_crop_status_color)
+        var titleColor = AttrsUtils.getTypeValueColor(mActivity, R.attr.picture_crop_title_color)
+        options.setToolbarColor(toolbarColor)
+        options.setStatusBarColor(statusColor)
+        options.setToolbarWidgetColor(titleColor)
     }
 }
